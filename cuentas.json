@@ -1,0 +1,70 @@
+{
+  "data": [
+    {
+      "codigo": 111,
+      "monedas": [
+        {
+          "moneda": "BTC",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "ETH",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "BNB",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "XRP",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "USDT",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "ADA",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "LTC",
+          "saldo": 0.0
+        }
+      ]
+    },
+    {
+      "codigo": 222,
+      "monedas": [
+        {
+          "moneda": "btc",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "ETH",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "BNB",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "XRP",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "USDT",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "ADA",
+          "saldo": 0.0
+        },
+        {
+          "moneda": "LTC",
+          "saldo": 0.0
+        }
+      ]
+    }
+  ]
+}
