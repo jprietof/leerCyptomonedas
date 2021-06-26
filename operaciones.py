@@ -3,25 +3,26 @@ class Archivos(object):
         self.ruta = ruta
         self.permisos = permisos
 
-    def abrirArchivo(self):
+    def abrir_archivo(self):
         archivo = open(self.ruta, self.permisos, encoding="utf8")
         return archivo
 
-    def leerArchivo(self):
+    def leer_archivo(self):
         archivo = open(self.ruta, self.permisos, encoding="utf8")
-        verDoc = archivo.readlines()
-        return verDoc
+        ver_doc = archivo.readlines()
+        return ver_doc
 
-    def escribirArchivo(self, texto):
+    def escribir_archivo(self, texto):
         archivo = open(self.ruta, self.permisos, encoding="utf8")
         archivo.write(texto)
         return print("Registro satisfactorio")
 
-    def cerrarArchivo(self):
+    def cerrar_archivo(self):
         archivo = open(self.ruta, self.permisos, encoding="utf8")
         archivo.close()
 
-class criptomendas(object):
+
+class Criptomendas(object):
 
     def __init__(self, nombre, saldo, cotizacion):
         self.nombre = nombre

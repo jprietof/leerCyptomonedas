@@ -1,11 +1,11 @@
 {
   "data": [
     {
-      "codigo": 111,
+      "codigo": "111",
       "monedas": [
         {
           "moneda": "BTC",
-          "saldo": 0.0
+          "saldo": 0.00878541
         },
         {
           "moneda": "ETH",
@@ -34,11 +34,11 @@
       ]
     },
     {
-      "codigo": 222,
+      "codigo": "222",
       "monedas": [
         {
-          "moneda": "btc",
-          "saldo": 0.0
+          "moneda": "BTC",
+          "saldo": 0.00234361
         },
         {
           "moneda": "ETH",
