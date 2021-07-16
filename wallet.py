@@ -1,8 +1,8 @@
 import json
-import requests
 from datetime import datetime
-from operaciones import Archivos
 
+import requests
+from operaciones import Archivos
 #  data connection
 url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
 
@@ -50,6 +50,48 @@ def mi_wallet(coin):
         return False
 
 
+def saldo_remitente(moneda):
+    contador = 0
+    pocicicion = 0
+    for num in monedas_dic:
+        if moneda == num:
+            pocicicion = contador
+            break
+        contador += 1
+    return pocicicion
+
+
+def wallet_user(coin):
+    contador = 0
+    pocicion = 0
+    for num in my_coin:
+        if coin == num:
+            pocicion = contador
+            break
+        contador += 1
+    return pocicion
+
+
+def cambios_wallet(data1, val1, valor):
+    # global dataWallet
+    dataWallet["data"][data1]["monedas"][val1]["saldo"] = valor
+    a_file = open("cuentas.json", "w")
+    json.dump(dataWallet, a_file, indent=2)
+    a_file.close()
+
+
+def guardar_movimiento(moneda, movimiento, codigo, valor, monto):
+    date = houre.strftime("%d %B %Y a las %H: %M")
+    transaccion = str(date) + " " + str(moneda) + " " + movimiento + " " + str(codigo) + " " + str(valor) \
+                                                + " " + str(monto) + " USD\n"
+    grabar = Archivos("movimientos.txt", "a")
+    grabar.escribir_archivo(transaccion)
+    grabar.cerrar_archivo()
+
+
+#def prcesar_info():
+
+
 def recibir(moneda, monto, codigo):
     destino = check_user(codigo, moneda)
     cuenta = mi_wallet(moneda)
@@ -61,10 +103,21 @@ def recibir(moneda, monto, codigo):
             send_cash = round(saldo - valor, 8)
             print(new_cash)
             print(send_cash)
+            print("-------------------------------------")
+            # show date of the coin
+            data1 = codigos.index(codigo)
+            val1 = saldo_remitente(moneda)
+            val2 = wallet_user(moneda)
+            print(val1, val2)
+
+            # dataWallet["data"][1]["monedas"][1]["moneda"]
+            cambios_wallet(data1, val1, send_cash)
+            cambios_wallet(0, val2, new_cash)
+            #print(dataWallet["data"][data1]["monedas"][val1]["saldo"])
+            #print(dataWallet["data"][0]["monedas"][val2]["saldo"])
+
             # save -> date, coin, type operation, code user, cant, cash dollar send
-            date = houre.strftime("%d %B %Y a las %H: %M")
-            transaccion = [date, moneda, "Recibir Cantidad", codigo, valor, str(monto) + " USD"]
-            return print(transaccion)
+            guardar_movimiento(moneda, "Recibir Cantidad", codigo, valor, monto)
         else:
             return print("El remitente sin saldo sufiente para realizar la transacción")
     elif destino and not cuenta:
@@ -83,9 +136,14 @@ def enviar(moneda, monto, codigo):
             new_cash = round(my_saldo - valor, 8)
             print(send_cash)
             print(new_cash)
-            date = houre.strftime("%d %B %Y a las %H: %M")
-            transaccion = [date, moneda, "Transferir Monto", codigo, valor, str(monto) + " USD"]
-            return print(transaccion)
+            # show date of the coin
+            data1 = codigos.index(codigo)
+            val1 = saldo_remitente(moneda)
+            val2 = wallet_user(moneda)
+            print(val1, val2)
+            cambios_wallet(data1, val1, send_cash)
+            cambios_wallet(0, val2, new_cash)
+            guardar_movimiento(moneda, "Enviar Cantidad", codigo, valor, monto)
         else:
             return print("saldo insuficiente")
     elif destino and not cuenta:
