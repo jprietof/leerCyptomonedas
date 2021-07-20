@@ -56,7 +56,6 @@ def saldo_remitente(moneda):
 
 # check wallet
 
-
 def mi_wallet(coin):
     wallet_coin()
     if coin in my_coin.keys():
@@ -75,7 +74,7 @@ def wallet_user(coin):
             pocicion = contador
             break
         contador += 1
-    return pocicion  # return posición donde esta la moneda
+    return pocicion  # retorna posición de la moneda
 
 
 def wallet_coin():
@@ -163,7 +162,7 @@ def balance(coin):
 
 
 def balance_general():
-    wallet_coin()
+    wallet_coin()  # call function
     total = 0
     print(f"\nMoneda \t|\t Cantidad \t|\t Monto USD\n")
     for cuenta in my_coin:
@@ -171,12 +170,11 @@ def balance_general():
         total += dollar
         print(f"{cuenta} \t|\t {my_coin[cuenta]} \t|\t {dollar} USD")
         print("-------------------------------------------------------")
-    # nombre de cada moneda, cantidad, y monto USD y mostrar el monto total en USD de todas las monedas
     print(f"\n==> EL monto total en USD de todas las monedas es de: {total} USD <==\n")
 
 
 def transacciones():
-    document = Archivos("movimientos.txt", "r")
+    document = Archivos("movimientos.txt", "r")  # read file movimientos.txt
     print(document.leer_archivo())
     document.cerrar_archivo()
 
@@ -243,7 +241,7 @@ my_coin = {}
 coinDollar = {}
 dataApi = connect_api(url)
 
-# get data crypto if api Coin market
+# get data crypto API Coin market
 for num in dataApi["data"]:
     coinDollar[num["symbol"]] = [num["name"], num["quote"]["USD"]["price"]]
 
