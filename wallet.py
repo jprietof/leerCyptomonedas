@@ -3,11 +3,12 @@ from datetime import datetime
 
 import requests
 from operaciones import Archivos
+
 #  data connection
 url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
 
 
-def connectApi(enlace):
+def connect_api(enlace):
     headers = {
         'Accepts': 'application/json',
         'X-CMC_PRO_API_KEY': '044da392-e920-48af-8aed-b31409241b83'
@@ -16,265 +17,234 @@ def connectApi(enlace):
     return info
 
 
-saldo = 0
-mensaje = ""
-houre = datetime.now()
+# check user
 
+def code_user():
+    # code users
+    data_wallet = file_wallet()
+    for wallet in data_wallet["data"]:
+        codigos.append(wallet["codigo"])
 
-# print(round(val_actual * coinDollar[moneda], 2))
 
 def check_user(code, coin):
+    code_user()
+    data_wallet = file_wallet()
     if code in codigos:
         position = codigos.index(code)
-        for cuentas in dataWallet['data'][position]["monedas"]:
-            monedas_dic[cuentas['moneda']] = cuentas['saldo']
+        for cuentass in data_wallet['data'][position]["monedas"]:
+            monedas_dic[cuentass['moneda']] = cuentass['saldo']
 
         if coin in monedas_dic.keys():
-            globals()['saldo'] = monedas_dic[coin]
-            return True
+            saldo = monedas_dic[coin]
+            return saldo
         else:
-            globals()['mensaje'] = "no tiene la moneda " + str(coin)
-            return False
+            return print(f"El destinatario no tiene la moneda: {coin}\n")
     else:
-        globals()["mensaje"] = "no existe"
-        return False
-
-
-def mi_wallet(coin):
-    for cuenta in dataWallet["data"][0]["monedas"]:
-        my_coin[cuenta['moneda']] = cuenta['saldo']
-    if coin in my_coin.keys():
-        globals()["my_saldo"] = my_coin[coin]
-        return True
-    else:
-        return False
+        return print("Upss el código no existe\n")
 
 
 def saldo_remitente(moneda):
     contador = 0
     pocicicion = 0
-    for num in monedas_dic:
-        if moneda == num:
+    for number in monedas_dic:
+        if moneda == number:
             pocicicion = contador
             break
         contador += 1
     return pocicicion
 
 
+# check wallet
+
+
+def mi_wallet(coin):
+    wallet_coin()
+    if coin in my_coin.keys():
+        saldo_cuenta = my_coin[coin]
+        return saldo_cuenta  # return saldo de my cuenta
+    else:
+        return False
+
+
 def wallet_user(coin):
+    wallet_coin()
     contador = 0
     pocicion = 0
-    for num in my_coin:
-        if coin == num:
+    for number in my_coin:
+        if coin == number:
             pocicion = contador
             break
         contador += 1
-    return pocicion
+    return pocicion  # return posición donde esta la moneda
+
+
+def wallet_coin():
+    # monedas wallet
+    data_wallet = file_wallet()
+    for cuentas in data_wallet["data"][0]["monedas"]:
+        my_coin[cuentas['moneda']] = cuentas['saldo']
+
+# save data
 
 
 def cambios_wallet(data1, val1, valor):
     # global dataWallet
-    dataWallet["data"][data1]["monedas"][val1]["saldo"] = valor
-    a_file = open("cuentas.json", "w")
-    json.dump(dataWallet, a_file, indent=2)
-    a_file.close()
+    data_wallet = file_wallet()
+    data_wallet["data"][data1]["monedas"][val1]["saldo"] = valor
+    my_file = open("cuentas.json", "w")
+    json.dump(data_wallet, my_file, indent=2)
+    my_file.close()
 
 
-def guardar_movimiento(moneda, movimiento, codigo, valor, monto):
+def procesar_info(codigo, moneda, destino, cuenta, movimiento, valor, monto):
+    code_user()
+    data1 = codigos.index(codigo)
+    val1 = saldo_remitente(moneda)
+    val2 = wallet_user(moneda)
+    cambios_wallet(data1, val1, destino)
+    cambios_wallet(0, val2, cuenta)
     date = houre.strftime("%d %B %Y a las %H: %M")
     transaccion = str(date) + " " + str(moneda) + " " + movimiento + " " + str(codigo) + " " + str(valor) \
                                                 + " " + str(monto) + " USD\n"
     grabar = Archivos("movimientos.txt", "a")
     grabar.escribir_archivo(transaccion)
     grabar.cerrar_archivo()
+    print("Operación realizada con exito")
 
-
-#def prcesar_info():
+# Option Menu
 
 
 def recibir(moneda, monto, codigo):
     destino = check_user(codigo, moneda)
     cuenta = mi_wallet(moneda)
     # si destino es True y valor <= saldo y cuenta es True
-    if destino and cuenta:
-        valor = round((monto * 1) / coinDollar[moneda], 8)
-        if valor <= saldo:
-            new_cash = round(my_saldo + valor, 8)
-            send_cash = round(saldo - valor, 8)
-            print(new_cash)
-            print(send_cash)
+    if type(destino) == float and type(cuenta) == float:
+        valor = round((monto * 1) / coinDollar[moneda][1], 8)
+        if valor <= destino:
+            new_cash = round(cuenta + valor, 8)
+            send_cash = round(destino - valor, 8)
             print("-------------------------------------")
             # show date of the coin
-            data1 = codigos.index(codigo)
-            val1 = saldo_remitente(moneda)
-            val2 = wallet_user(moneda)
-            print(val1, val2)
-
-            # dataWallet["data"][1]["monedas"][1]["moneda"]
-            cambios_wallet(data1, val1, send_cash)
-            cambios_wallet(0, val2, new_cash)
-            #print(dataWallet["data"][data1]["monedas"][val1]["saldo"])
-            #print(dataWallet["data"][0]["monedas"][val2]["saldo"])
-
-            # save -> date, coin, type operation, code user, cant, cash dollar send
-            guardar_movimiento(moneda, "Recibir Cantidad", codigo, valor, monto)
+            procesar_info(codigo, moneda, send_cash, new_cash, "Recibir Cantidad", valor, monto)
         else:
             return print("El remitente sin saldo sufiente para realizar la transacción")
-    elif destino and not cuenta:
-        return print("Lo siento en tu billetera no exite la moneda: ", moneda)
-    else:
-        return print("El remitente", mensaje)
+    elif type(destino) == float and not type(cuenta) == float:
+        return print(f"En tu billetera no exite la moneda: {moneda}\n")
 
 
 def enviar(moneda, monto, codigo):
     destino = check_user(codigo, moneda)
     cuenta = mi_wallet(moneda)
-    if destino and cuenta:
-        valor = round((monto * 1) / coinDollar[moneda], 8)
-        if valor <= my_saldo:
-            send_cash = round(saldo + valor, 8)
-            new_cash = round(my_saldo - valor, 8)
-            print(send_cash)
-            print(new_cash)
+    if type(destino) == float and type(cuenta) == float:
+        valor = round((monto * 1) / coinDollar[moneda][1], 8)
+        if valor <= cuenta:
+            send_cash = round(destino + valor, 8)
+            new_cash = round(cuenta - valor, 8)
             # show date of the coin
-            data1 = codigos.index(codigo)
-            val1 = saldo_remitente(moneda)
-            val2 = wallet_user(moneda)
-            print(val1, val2)
-            cambios_wallet(data1, val1, send_cash)
-            cambios_wallet(0, val2, new_cash)
-            guardar_movimiento(moneda, "Enviar Cantidad", codigo, valor, monto)
+            procesar_info(codigo, moneda, send_cash, new_cash, "Enviar Cantidad", valor, monto)
         else:
-            return print("saldo insuficiente")
-    elif destino and not cuenta:
-        return print("Lo siento en tu billetera no exite la moneda: ", moneda)
+            return print("saldo insuficiente para realizar la operación")
+    elif type(destino) == float and not type(cuenta) == float:
+        return print(f"En tu billetera no exite la moneda: {moneda}\n")
+
+
+def balance(coin):
+    wallet_coin()
+    mi_cuenta = mi_wallet(coin)
+    if type(mi_cuenta) == float:
+        nombre = coinDollar[coin][0]
+        dollar = round(mi_cuenta * coinDollar[coin][1], 2)
+        print("---------------------------------------------")
+        print("Moneda\t | \tCantidad\t | \tMonto USD")
+        print(f"{nombre}\t | \t{mi_cuenta}\t | \t{dollar} USD")
+        print("---------------------------------------------")
     else:
-        return print("El remitente", mensaje)
-
-
-def balance():
-    pass
+        print(f"La moneda {coin} no esta en la cuenta\n")
 
 
 def balance_general():
-    pass
+    wallet_coin()
+    total = 0
+    print(f"\nMoneda \t|\t Cantidad \t|\t Monto USD\n")
+    for cuenta in my_coin:
+        dollar = round(my_coin[cuenta] * coinDollar[cuenta][1], 2)
+        total += dollar
+        print(f"{cuenta} \t|\t {my_coin[cuenta]} \t|\t {dollar} USD")
+        print("-------------------------------------------------------")
+    # nombre de cada moneda, cantidad, y monto USD y mostrar el monto total en USD de todas las monedas
+    print(f"\n==> EL monto total en USD de todas las monedas es de: {total} USD <==\n")
 
 
 def transacciones():
-    pass
+    document = Archivos("movimientos.txt", "r")
+    print(document.leer_archivo())
+    document.cerrar_archivo()
 
 
-codigos = []
-monedas_dic = {}
-my_coin = {}
-my_saldo = 0
-coinDollar = {}
-dataApi = connectApi(url)
-
-# get data crypto if api Coin market
-for num in dataApi["data"]:
-    coinDollar[num["symbol"]] = num["quote"]["USD"]["price"]
-
-# open file json
-a_file = open("cuentas.json", "r")
-dataWallet = json.load(a_file)
-a_file.close()
-
-print(len(dataWallet["data"]))
-
-for wallet in dataWallet["data"]:
-    codigos.append(wallet["codigo"])
-
-print(codigos)
-
-"""cuenta = int(input("Ingrese el código: "))
-print(cuenta)
-if cuenta in codigos:
-    posicion = codigos.index(cuenta)
-    for saldo in dataWallet["data"][posicion]["monedas"]:
-        monedas_dic[saldo["moneda"]] = saldo["saldo"]
-else:
-    print("La cuenta no existe")
-
-print(monedas_dic)
-
-crypto = input("Ingrese la criptomoneda: ")
-monto = monedas_dic[crypto]
-print("El saldo de", crypto, "es", monto)
-
-# edit file json
-print(dataWallet["data"][1]["monedas"][1]["moneda"])
-dataWallet["data"][1]["monedas"][0]["moneda"] = "btc"
-a_file = open("cuentas.json", "w")
-json.dump(dataWallet, a_file, indent=2)
-a_file.close() """
+def file_wallet():
+    # open file json
+    a_file = open("cuentas.json", "r")
+    data_wallet = json.load(a_file)
+    a_file.close()
+    return data_wallet
 
 
 def menu():
-    print("********* Menú de Opciones *********")
-    print("""
-    1. Recibir Cantidad
-    2.Tranferir monto
-    3. Mostrar balance de una moneda
-    4. Mostar balance general
-    5. Mostrar historico de transaciones
-    6. Salir del programa""")
-    opcion = input("\nIngrese una opción del menu: ")
-    if opcion == "1":
-        print("es la opcion 1")
-        moneda = input("Ingrese las iniciales de la criptomoneda a recibir: ").upper()
-        monto = input("Ingrese el monto en dolares a recibir: ")
-        codigo = input("Ingrese el codigo del remitente: ")
-        if not moneda.isdigit() and monto.isdigit() and codigo.isdigit():
-            recibir(moneda, float(monto), codigo)
+    estado = False
+    while not estado:
+        print("********* Menú de Opciones *********")
+        print("""
+        1. Recibir Cantidad
+        2. Tranferir monto
+        3. Mostrar balance de una moneda
+        4. Mostar balance general
+        5. Mostrar historico de transaciones
+        6. Salir del programa""")
+        opcion = int(input("\nIngrese una opción del menu: "))
+        if opcion == 1:
+            moneda = input("Ingrese las iniciales de la criptomoneda a recibir: ").upper()
+            monto = input("Ingrese el monto en dolares a recibir: ")
+            codigo = input("Ingrese el codigo del remitente: ")
+            print("____________________________________________________________________________")
+            if not moneda.isdigit() and monto.isdigit() and codigo.isdigit():
+                recibir(moneda, float(monto), codigo)
+            else:
+                print("Ingrese datos validos en cada campo")
+        elif opcion == 2:
+            moneda = input("Ingrese las iniciales de la criptomoneda a enviar: ").upper()
+            monto = input("Ingrese el monto en dolares a enviar: ")
+            codigo = input("Ingrese el codigo del destinatario: ")
+            print("____________________________________________________________________________")
+            if not moneda.isdigit() and monto.isdigit() and codigo.isdigit():
+                enviar(moneda, float(monto), codigo)
+            else:
+                print("Ingrese datos validos en cada campo")
+        elif opcion == 3:
+            moneda = input("Ingrese la iniciales de la criptomoneda que desea consultar: ").upper()
+            print("________________________________________________________________________________")
+            if not moneda.isdigit():
+                balance(moneda)
+            else:
+                print("No se permiten números\n")
+        elif opcion == 4:
+            balance_general()
+        elif opcion == 5:
+            transacciones()
+        elif opcion == 6:
+            estado = True
         else:
-            print("Ingrese datos validos en cada campo")
-    if opcion == "2":
-        print("es la opcion 2")
-        moneda = input("Ingrese las iniciales de la criptomoneda a enviar: ").upper()
-        monto = input("Ingrese el monto en dolares a enviar: ")
-        codigo = input("Ingrese el codigo del destinatario: ")
-        if not moneda.isdigit() and monto.isdigit() and codigo.isdigit():
-            enviar(moneda, float(monto), codigo)
-        else:
-            print("Ingrese datos validos en cada campo")
+            print("| --------> Ingrese una opción correcta <---------- |\n")
 
+
+houre = datetime.now()
+codigos = []
+monedas_dic = {}
+my_coin = {}
+coinDollar = {}
+dataApi = connect_api(url)
+
+# get data crypto if api Coin market
+for num in dataApi["data"]:
+    coinDollar[num["symbol"]] = [num["name"], num["quote"]["USD"]["price"]]
 
 menu()
-""" cuenta = Archivos("movimientos.txt", "r+")
-print(cuenta.leerArchivo())
-for elemento in cuenta.leerArchivo():
-    campos = elemento.replace("\n", "").split(":")
-    print(len(campos))
-cuenta.cerrarArchivo()
-
-
-data = connectApi(url)
-
-for id in data["data"]:
-    monedas_dic[id["symbol"]] = id["quote"]["USD"]["price"]
-
-monedas = monedas_dic.keys()
-cuenta.escribirArchivo(str(monedas))
-print(monedas)
-coin = input("Ingrese la iniciales de la moneda: ").upper()
-cant = float(input("Ingrese la cantidas en USD: "))
-
-while not moneda(coin):
-    print("Moneda Invalida")
-    coin = input("Ingrese la iniciales de las monedas: ").upper()
-    cant = float(input("Ingrese la cantidas en USD: "))
-else:
-    print("La moneda", coin, "Tiene un precio de:", monedas_dic.get(coin), "USD")
-    valor = cant / monedas_dic.get(coin)
-    valorCoin = round(valor, 8)
-    print(valorCoin, "BTC") 
-    
-    
-    # pueba para saldo
-    valorTotal = float(saldos.get(coin)) + float(valorCoin)  # add cant
-    valorTotal1 = float(saldos.get(coin)) - float(valorCoin)  # restar cant
-
-    print(valorTotal)
-    print(valorTotal1) 
-    """
