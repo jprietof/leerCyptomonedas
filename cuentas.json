@@ -5,7 +5,7 @@
       "monedas": [
         {
           "moneda": "BTC",
-          "saldo": 0.00878541
+          "saldo": 0.01758813
         },
         {
           "moneda": "ETH",
@@ -16,20 +16,16 @@
           "saldo": 0.0
         },
         {
-          "moneda": "XRP",
-          "saldo": 0.0
-        },
-        {
           "moneda": "USDT",
           "saldo": 0.0
         },
         {
           "moneda": "ADA",
-          "saldo": 0.0
+          "saldo": 9.41238869
         },
         {
           "moneda": "LTC",
-          "saldo": 0.0
+          "saldo": 0.27088279
         }
       ]
     },
@@ -38,7 +34,7 @@
       "monedas": [
         {
           "moneda": "BTC",
-          "saldo": 0.00234361
+          "saldo": 0.00450944
         },
         {
           "moneda": "ETH",
@@ -58,11 +54,44 @@
         },
         {
           "moneda": "ADA",
-          "saldo": 0.0
+          "saldo": 1720.22504731
         },
         {
           "moneda": "LTC",
+          "saldo": 0.34611721
+        }
+      ]
+    },
+    {
+      "codigo": "333",
+      "monedas": [
+        {
+          "moneda": "BTC",
+          "saldo": 0.0613394
+        },
+        {
+          "moneda": "ETH",
+          "saldo": 1.0531057
+        },
+        {
+          "moneda": "BNB",
+          "saldo": 6.9435463
+        },
+        {
+          "moneda": "XRP",
           "saldo": 0.0
+        },
+        {
+          "moneda": "USDT",
+          "saldo": 1836.488568
+        },
+        {
+          "moneda": "ADA",
+          "saldo": 1720.22504731
+        },
+        {
+          "moneda": "LTC",
+          "saldo": 0.34611721
         }
       ]
     }
